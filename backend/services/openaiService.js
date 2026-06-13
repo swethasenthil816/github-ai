@@ -87,12 +87,10 @@ The output JSON structure MUST match this scheme:
   ],
   "interviewQuestions": {
     "technical": [
-      "Technical Question 1 based on the tech stack and codebase",
-      "Technical Question 2 based on the tech stack and codebase"
+      { "question": "Technical Question 1 based on the tech stack and codebase?", "answer": "Comprehensive technical answer to help the candidate prepare." }
     ],
     "architecture": [
-      "Architecture Question 1 based on design pattern or scalability",
-      "Architecture Question 2 based on design pattern or scalability"
+      { "question": "Architecture Question 1 based on design pattern or scalability?", "answer": "Comprehensive architectural answer to help the candidate prepare." }
     ]
   },
   "improvements": {
@@ -110,7 +108,7 @@ The output JSON structure MUST match this scheme:
 }
 
 Important:
-- Provide 10 technical questions and 5 architecture questions in the 'interviewQuestions' arrays.
+- Provide exactly 5 or 6 technical questions and 5 or 6 architecture questions in the 'interviewQuestions' arrays. Each question MUST be an object containing both "question" and "answer" properties.
 - Provide exactly 3 high-quality, professional resume bullet points in 'resumeBullets'.
 - Provide exactly 5 scores out of 10 in 'scores' for: codeQuality, readability, documentation, scalability, maintainability.
 - In 'importantFiles', identify 4-6 of the most critical files in this repository (e.g. server.js, app.js, config files, package.json, primary route files, or primary components) and explain their purpose in 1-2 sentences.`;
