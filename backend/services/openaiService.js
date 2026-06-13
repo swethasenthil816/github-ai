@@ -145,16 +145,14 @@ ${fileTreeSummary}
 
       const responseText = response.choices[0].message.content;
       
-      // Clean markdown code blocks if present (e.g. ```json ... ```)
-      let cleanedText = responseText.trim();
-      if (cleanedText.startsWith('```')) {
-        cleanedText = cleanedText
-          .replace(/^```json\s*/i, '') // Remove starting ```json
-          .replace(/^```\s*/, '')      // Remove starting ``` if no language
-          .replace(/```$/, '')        // Remove ending ```
-          .trim();
+      // Extract the JSON object from the response robustly
+      const start = responseText.indexOf('{');
+      const end = responseText.lastIndexOf('}');
+      if (start === -1 || end === -1 || end < start) {
+        throw new Error('No valid JSON object found in AI response.');
       }
-
+      
+      const cleanedText = responseText.substring(start, end + 1).trim();
       return JSON.parse(cleanedText);
     } catch (error) {
       console.error('[OpenaiService] Error generating analysis:', error);
