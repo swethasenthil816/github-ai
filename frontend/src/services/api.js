@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '', // Empty because we rely on Vite's proxy for /api requests
+  baseURL: 'https://github-ai-y5yx.onrender.com', // Live Render production backend URL
   headers: {
     'Content-Type': 'application/json'
   }
