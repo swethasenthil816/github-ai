@@ -105,7 +105,11 @@ export default function App() {
         {isLoading ? (
           <LoadingState />
         ) : analysisData ? (
-          <Dashboard data={analysisData} onReset={handleReset} />
+          <Dashboard
+            data={analysisData}
+            onReset={handleReset}
+            filePaths={analysisData.repoInfo.fileTree || []}
+          />
         ) : (
           !error && <LandingPage onAnalyze={handleAnalyze} isLoading={isLoading} />
         )}

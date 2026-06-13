@@ -151,7 +151,30 @@ ${fileTreeSummary}
       }
       
       const cleanedText = responseText.substring(start, end + 1).trim();
-      return JSON.parse(cleanedText);
+      const parsed = JSON.parse(cleanedText);
+
+      // Defensive normalization: ensure interviewQuestions are objects with question/answer
+      const normalizeQA = (arr) => {
+        if (!Array.isArray(arr)) return [];
+        return arr.map(item => {
+          if (typeof item === 'string') {
+            return { question: item, answer: 'See project documentation for details.' };
+          }
+          return {
+            question: item.question || item.Question || item.q || '',
+            answer: item.answer || item.Answer || item.a || ''
+          };
+        });
+      };
+
+      if (parsed.interviewQuestions) {
+        parsed.interviewQuestions.technical = normalizeQA(parsed.interviewQuestions.technical);
+        parsed.interviewQuestions.architecture = normalizeQA(parsed.interviewQuestions.architecture);
+      } else {
+        parsed.interviewQuestions = { technical: [], architecture: [] };
+      }
+
+      return parsed;
     } catch (error) {
       console.error('[OpenaiService] Error generating analysis:', error);
       throw new Error(`AI Analysis failed: ${error.message}`);

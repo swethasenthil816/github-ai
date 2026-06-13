@@ -104,7 +104,9 @@ export default function Dashboard({ data, onReset, filePaths = [] }) {
 
   useEffect(() => {
     // Collect filePaths from backend payload or fallback
-    const files = filePaths.length ? filePaths : (repoInfo.fileTree || []);
+    const rawFiles = filePaths.length ? filePaths : (repoInfo.fileTree || []);
+    // Normalize: accept both raw objects {path, type} and plain strings
+    const files = rawFiles.map(f => typeof f === 'string' ? { path: f, type: 'blob' } : f);
     setTreeData(buildTree(files));
   }, [data, filePaths]);
 
@@ -420,7 +422,7 @@ export default function Dashboard({ data, onReset, filePaths = [] }) {
                         : 'text-slate-500 dark:text-dark-muted hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                   >
-                    Technical ({analysis.interviewQuestions.technical.length})
+                    Technical ({(analysis.interviewQuestions?.technical || []).length})
                   </button>
                   <button
                     onClick={() => setActiveQuestionTab('architecture')}
@@ -430,7 +432,7 @@ export default function Dashboard({ data, onReset, filePaths = [] }) {
                         : 'text-slate-500 dark:text-dark-muted hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                   >
-                    Architecture ({analysis.interviewQuestions.architecture.length})
+                    Architecture ({(analysis.interviewQuestions?.architecture || []).length})
                   </button>
                 </div>
                 
@@ -457,47 +459,55 @@ export default function Dashboard({ data, onReset, filePaths = [] }) {
             {/* Scrollable Questions list */}
             <div className="overflow-y-auto max-h-[320px] pr-2 space-y-3">
               {activeQuestionTab === 'technical' ? (
-                analysis.interviewQuestions.technical.map((q, idx) => (
-                  <details 
-                    key={idx} 
-                    className="group border border-slate-150 dark:border-dark-border/40 rounded-xl p-3 bg-slate-50 dark:bg-dark-cardMuted/20 hover:border-cyan-500/30 dark:hover:border-cyan-500/20 transition-all duration-200"
-                  >
-                    <summary className="flex justify-between items-center font-medium text-sm text-slate-800 dark:text-white cursor-pointer select-none list-none">
-                      <div className="flex gap-3 items-center pr-2">
-                        <span className="text-xs font-bold text-cyan-500 dark:text-cyan-400 bg-cyan-500/5 dark:bg-cyan-500/10 px-2.5 py-0.5 rounded border border-cyan-500/10 flex-shrink-0">
-                          T{idx + 1}
-                        </span>
-                        <span className="text-left leading-relaxed">{q.question}</span>
+                (analysis.interviewQuestions?.technical || []).length > 0 ? (
+                  (analysis.interviewQuestions.technical).map((q, idx) => (
+                    <details 
+                      key={idx} 
+                      className="group border border-slate-150 dark:border-dark-border/40 rounded-xl p-3 bg-slate-50 dark:bg-dark-cardMuted/20 hover:border-cyan-500/30 dark:hover:border-cyan-500/20 transition-all duration-200"
+                    >
+                      <summary className="flex justify-between items-center font-medium text-sm text-slate-800 dark:text-white cursor-pointer select-none list-none">
+                        <div className="flex gap-3 items-center pr-2">
+                          <span className="text-xs font-bold text-cyan-500 dark:text-cyan-400 bg-cyan-500/5 dark:bg-cyan-500/10 px-2.5 py-0.5 rounded border border-cyan-500/10 flex-shrink-0">
+                            T{idx + 1}
+                          </span>
+                          <span className="text-left leading-relaxed">{q.question || q.Question || 'Interview question'}</span>
+                        </div>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 group-open:rotate-185 transition-transform duration-200">▼</span>
+                      </summary>
+                      <div className="mt-3 pl-11 border-t border-slate-100 dark:border-dark-border/20 pt-3 text-xs leading-relaxed text-slate-600 dark:text-slate-350 text-left">
+                        <p className="font-semibold text-cyan-600 dark:text-cyan-455 mb-1">Answer:</p>
+                        <p className="whitespace-pre-line">{q.answer || q.Answer || 'No answer provided.'}</p>
                       </div>
-                      <span className="text-xs text-slate-400 dark:text-slate-500 group-open:rotate-185 transition-transform duration-200">▼</span>
-                    </summary>
-                    <div className="mt-3 pl-11 border-t border-slate-100 dark:border-dark-border/20 pt-3 text-xs leading-relaxed text-slate-600 dark:text-slate-350 text-left">
-                      <p className="font-semibold text-cyan-600 dark:text-cyan-455 mb-1">Answer:</p>
-                      <p className="whitespace-pre-line">{q.answer}</p>
-                    </div>
-                  </details>
-                ))
+                    </details>
+                  ))
+                ) : (
+                  <div className="text-center text-slate-400 dark:text-slate-500 text-sm py-8">No technical questions generated.</div>
+                )
               ) : (
-                analysis.interviewQuestions.architecture.map((q, idx) => (
-                  <details 
-                    key={idx} 
-                    className="group border border-slate-150 dark:border-dark-border/40 rounded-xl p-3 bg-slate-50 dark:bg-dark-cardMuted/20 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-200"
-                  >
-                    <summary className="flex justify-between items-center font-medium text-sm text-slate-800 dark:text-white cursor-pointer select-none list-none">
-                      <div className="flex gap-3 items-center pr-2">
-                        <span className="text-xs font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-500/5 dark:bg-indigo-500/10 px-2.5 py-0.5 rounded border border-indigo-500/10 flex-shrink-0">
-                          A{idx + 1}
-                        </span>
-                        <span className="text-left leading-relaxed">{q.question}</span>
+                (analysis.interviewQuestions?.architecture || []).length > 0 ? (
+                  (analysis.interviewQuestions.architecture).map((q, idx) => (
+                    <details 
+                      key={idx} 
+                      className="group border border-slate-150 dark:border-dark-border/40 rounded-xl p-3 bg-slate-50 dark:bg-dark-cardMuted/20 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-200"
+                    >
+                      <summary className="flex justify-between items-center font-medium text-sm text-slate-800 dark:text-white cursor-pointer select-none list-none">
+                        <div className="flex gap-3 items-center pr-2">
+                          <span className="text-xs font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-500/5 dark:bg-indigo-500/10 px-2.5 py-0.5 rounded border border-indigo-500/10 flex-shrink-0">
+                            A{idx + 1}
+                          </span>
+                          <span className="text-left leading-relaxed">{q.question || q.Question || 'Architecture question'}</span>
+                        </div>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 group-open:rotate-185 transition-transform duration-200">▼</span>
+                      </summary>
+                      <div className="mt-3 pl-11 border-t border-slate-100 dark:border-dark-border/20 pt-3 text-xs leading-relaxed text-slate-600 dark:text-slate-350 text-left">
+                        <p className="font-semibold text-indigo-650 dark:text-indigo-455 mb-1">Answer:</p>
+                        <p className="whitespace-pre-line">{q.answer || q.Answer || 'No answer provided.'}</p>
                       </div>
-                      <span className="text-xs text-slate-400 dark:text-slate-500 group-open:rotate-185 transition-transform duration-200">▼</span>
-                    </summary>
-                    <div className="mt-3 pl-11 border-t border-slate-100 dark:border-dark-border/20 pt-3 text-xs leading-relaxed text-slate-600 dark:text-slate-350 text-left">
-                      <p className="font-semibold text-indigo-650 dark:text-indigo-455 mb-1">Answer:</p>
-                      <p className="whitespace-pre-line">{q.answer}</p>
-                    </div>
-                  </details>
-                ))
+                    </details>
+                  ))
+                ) : (
+                  <div className="text-center text-slate-400 dark:text-slate-500 text-sm py-8">No architecture questions generated.</div>
+                )
               )}
             </div>
           </div>
