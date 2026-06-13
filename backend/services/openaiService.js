@@ -144,7 +144,18 @@ ${fileTreeSummary}
       });
 
       const responseText = response.choices[0].message.content;
-      return JSON.parse(responseText);
+      
+      // Clean markdown code blocks if present (e.g. ```json ... ```)
+      let cleanedText = responseText.trim();
+      if (cleanedText.startsWith('```')) {
+        cleanedText = cleanedText
+          .replace(/^```json\s*/i, '') // Remove starting ```json
+          .replace(/^```\s*/, '')      // Remove starting ``` if no language
+          .replace(/```$/, '')        // Remove ending ```
+          .trim();
+      }
+
+      return JSON.parse(cleanedText);
     } catch (error) {
       console.error('[OpenaiService] Error generating analysis:', error);
       throw new Error(`AI Analysis failed: ${error.message}`);
