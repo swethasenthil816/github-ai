@@ -56,7 +56,8 @@ export async function analyzeRepository(req, res) {
           openIssues: repoPayload.openIssues,
           owner: repoPayload.owner,
           defaultBranch: repoPayload.defaultBranch,
-          languages: repoPayload.languages
+          languages: repoPayload.languages,
+          fileTree: repoPayload.fileTree
         },
         analysis: aiAnalysis
       }
